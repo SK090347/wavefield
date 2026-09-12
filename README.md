@@ -14,46 +14,62 @@ A portfolio-ready computational-physics demo: one shared update scheme across th
   <img src="docs/preview.svg" alt="wavefield amplitude heatmap preview" width="420" />
 </p>
 
-## Wave equation
+---
 
-The simulator integrates the **2D acoustic / scalar wave equation**
+## Mathematics / Formulation
 
-\[
+Governing PDE — 2D acoustic / scalar wave equation:
+
+$$
 \frac{\partial^2 u}{\partial t^2} = c^2 \nabla^2 u
-\]
+$$
 
-with a classic **central-difference leapfrog** (FDTD) scheme on a uniform Cartesian grid:
+Central-difference leapfrog (FDTD) on a uniform grid:
 
-\[
+$$
+\begin{aligned}
 u^{n+1}_{i,j}
-=
+&=
 2u^{n}_{i,j}-u^{n-1}_{i,j}
-+r_x^2\bigl(u^{n}_{i+1,j}+u^{n}_{i-1,j}\bigr)
-+r_y^2\bigl(u^{n}_{i,j+1}+u^{n}_{i,j-1}\bigr)
++r_x^2\bigl(u^{n}_{i+1,j}+u^{n}_{i-1,j}\bigr) \\
+&\quad +r_y^2\bigl(u^{n}_{i,j+1}+u^{n}_{i,j-1}\bigr)
 -2(r_x^2+r_y^2)\,u^{n}_{i,j}
-\]
+\end{aligned}
+$$
 
-where \(r_x = c\,\Delta t/\Delta x\) and \(r_y = c\,\Delta t/\Delta y\).  
-For isotropic spacing the **CFL stability limit** is
+with Courant numbers $r_x = c\,\Delta t/\Delta x$, $r_y = c\,\Delta t/\Delta y$. For isotropic spacing the **CFL stability limit** is
 
-\[
+$$
 \frac{c\,\Delta t}{\Delta x} \le \frac{1}{\sqrt{2}}.
-\]
+$$
 
-Default runs use a safety factor (Courant target ≈ 0.5) so the scheme stays comfortably inside the stable region.
+Default runs target Courant ≈ 0.5 (safety margin inside the stable region).
 
-### Absorbing boundaries (Mur ABC)
+### Mur absorbing boundaries
 
-Hard Dirichlet walls (`u = 0`) reflect energy forever. For open-domain demos we implement **first-order Mur absorbing boundary conditions** on each face:
+First-order Mur ABC (left face; others analogous):
 
-\[
+$$
 u^{n+1}_{0,j}
 =
 u^{n}_{1,j}
 +\frac{c\Delta t-\Delta x}{c\Delta t+\Delta x}\bigl(u^{n+1}_{1,j}-u^{n}_{0,j}\bigr)
-\]
+$$
 
-(and analogous formulas for the other three faces). Waves leave the box with only weak reflections — visible as energy decaying after the pulse exits.
+### What is computed / conserved
+
+| Quantity | Role |
+|----------|------|
+| Field $u$ | Scalar pressure / displacement amplitude |
+| Discrete energy proxy | $\sum (u^n - u^{n-1})^2 + c^2\|\nabla u\|^2$ style monitor |
+| $\max\|u\|$ | Blow-up detector for CFL tests |
+| Mur drain | Outgoing energy leaves the domain (weak reflections) |
+
+**Why this formula?** The wave equation + CFL bound is the canonical PDE numerics interview: discretize, prove stability, then open the domain with ABCs. Same stencil in Python / C++ / TS.
+
+Extended notes: [docs/MATH.md](docs/MATH.md).
+
+---
 
 ## Project layout
 
@@ -62,7 +78,7 @@ python/          NumPy reference solver + pytest (CFL / energy)
 cpp/             C++17 kernel + CLI (subprocess-friendly frame dump)
 web/             Vite + TypeScript live canvas heatmap
 .github/         CI across Python, C++, and the web package
-docs/            Preview asset
+docs/            Preview asset + MATH.md
 ```
 
 All three solvers share the **same stencil**, **same CFL rule**, and **same Mur ABC**.
@@ -131,7 +147,7 @@ npm run build
 - **Numerics** — leapfrog stability, discrete energy proxies, vectorized NumPy  
 - **Systems / performance** — C++17 kernel with identical scheme, CLI frame I/O  
 - **Interactive viz** — TypeScript Canvas heatmap, adaptive scaling, UX controls  
-- **Engineering** — dual MIT/Apache licensing, pytest + Vitest, multi-language CI
+- **Engineering** — dual MIT/Apache licensing, pytest + Vitest, multi-language CI, math documented in-repo
 
 ## Topics
 
