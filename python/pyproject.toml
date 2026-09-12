@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wavefield"
+version = "1.0.0"
+description = "2D FDTD scalar wave equation simulator (Python reference)"
+readme = "../README.md"
+requires-python = ">=3.10"
+license = { text = "MIT OR Apache-2.0" }
+authors = [{ name = "Sumit Kumar Ta", email = "tasumitkumar47@gmail.com" }]
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+wavefield = "wavefield.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["wavefield*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

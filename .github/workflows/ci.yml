@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  python:
+    name: Python reference
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -r requirements.txt
+      - name: Pytest
+        run: python -m pytest -q
+      - name: Smoke CLI
+        run: python -m wavefield --nx 48 --ny 48 --steps 40
+
+  cpp:
+    name: C++ kernel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure & build
+        run: |
+          cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build cpp/build -j
+      - name: Smoke CLI
+        run: ./cpp/build/wavefield_cpp --nx 48 --ny 48 --steps 40 --boundary mur
+
+  web:
+    name: TypeScript web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install
+        run: npm install
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
