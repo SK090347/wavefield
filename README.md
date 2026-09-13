@@ -1,5 +1,7 @@
 # wavefield
 
+
+**Live demo:** https://sk090347.github.io/wavefield/
 2D FDTD scalar wave simulator — NumPy reference, C++17 kernel, and a live Canvas heatmap. Same stencil and CFL rule in all three places; click the canvas to drop Gaussian pulses.
 
 [![CI](https://github.com/SK090347/wavefield/actions/workflows/ci.yml/badge.svg)](https://github.com/SK090347/wavefield/actions/workflows/ci.yml)

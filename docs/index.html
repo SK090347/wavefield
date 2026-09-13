@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>wavefield — 2D FDTD</title>
+    <meta
+      name="description"
+      content="Live 2D finite-difference time-domain wave equation simulator in the browser."
+    />
+    <script type="module" crossorigin src="./assets/index-BoiIQqur.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CyW1ivAn.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">computational physics · portfolio</p>
+          <h1>wavefield</h1>
+          <p class="tagline">
+            Live 2D FDTD scalar wave equation — same update scheme as the Python
+            reference &amp; C++ kernel.
+          </p>
+        </div>
+        <div class="badges">
+          <span>Python</span>
+          <span>C++</span>
+          <span>TypeScript</span>
+          <span>FDTD</span>
+        </div>
+      </header>
+
+      <main class="stage">
+        <canvas id="field" width="512" height="512" aria-label="Wave amplitude heatmap"></canvas>
+        <aside class="panel">
+          <h2>Controls</h2>
+          <label>
+            Speed
+            <input id="speed" type="range" min="1" max="8" value="2" />
+          </label>
+          <label>
+            CFL
+            <input id="cfl" type="range" min="20" max="70" value="50" />
+            <span id="cflVal">0.50</span>
+          </label>
+          <label class="row">
+            Boundary
+            <select id="boundary">
+              <option value="mur" selected>Mur ABC</option>
+              <option value="dirichlet">Dirichlet</option>
+            </select>
+          </label>
+          <label class="row">
+            Colormap
+            <select id="cmap">
+              <option value="plasma" selected>Plasma</option>
+              <option value="seismic">Seismic</option>
+              <option value="viridis">Viridis</option>
+            </select>
+          </label>
+          <div class="buttons">
+            <button id="pulse" type="button">Drop pulse</button>
+            <button id="reset" type="button" class="ghost">Reset</button>
+            <button id="pause" type="button" class="ghost">Pause</button>
+          </div>
+          <dl class="stats">
+            <div><dt>step</dt><dd id="statStep">0</dd></div>
+            <div><dt>max |u|</dt><dd id="statMax">0</dd></div>
+            <div><dt>energy</dt><dd id="statEnergy">0</dd></div>
+            <div><dt>fps</dt><dd id="statFps">—</dd></div>
+          </dl>
+          <p class="hint">
+            Click the canvas to inject a Gaussian pulse. Mur absorbing boundaries
+            let waves leave the domain with minimal reflection.
+          </p>
+        </aside>
+      </main>
+
+      <footer>
+        <span>∂²u/∂t² = c² ∇²u · CFL ≤ 1/√2</span>
+        <a href="https://github.com/SK090347/wavefield">SK090347/wavefield</a>
+      </footer>
+    </div>
+  </body>
+</html>
